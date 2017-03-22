@@ -1,14 +1,16 @@
 //---------------------------------------------------------------------------
+#include <vcl.h>
+#include <iostream.h>
+#include <conio.h>
 #pragma hdrstop
 
 #include "Unit2.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
-struct mn {int M[100]; int numberofel; int predst;} *s; //структура, содержащая множество(массив), переменную кол-ва элементов во множестве и переменную, равную представителю данного множества
-int a=100, b, x, y;
-int Make_Set(int x ,int nummn){ //Функция создания нового множества(по заданному представителю - первому элементу)
+struct mn {int *M; int numberofel; int predst;} *s; //структура, содержащая множество(массив), переменную кол-ва элементов во множестве и переменную, равную представителю данного множества
+int Make_Set(int x ,int nummn, int numelmax){ //Функция создания нового множества(по заданному представителю - первому элементу)
         int setnumber, c;
-        setnumber=Find_Set(x);
+        setnumber=Find_Set(x, nummn);
         if(setnumber>=0){
                 c=2;
                 return c;
@@ -24,43 +26,40 @@ int Make_Set(int x ,int nummn){ //Функция создания нового множества(по заданному
                         }
                 }
         }
-}
-int Add_Element(int x, int y, int nummn, int numelmax){ //функция добавления переменных к уже созданному множеству с существующим первым элементом - представителем
-        int q, c;
-        for(int i=0;i<nummn;i++){ //поиск множества с заданным представителем
-                if(x==s[i].predst && s[i].numberofel>0){
-                        if(s[i].numberofel==a){
-                                c=3;
-                                return c;
-                        }
-                        for(int k=0;k<nummn;k++){ //проверка элемента на существование в других множествах
-                                for(int l=0;l<numelmax;l++){
-                                        if(y!=s[k].M[l]){ //если не равен элементу множества
-                                                c=1;
-                                                continue; //то продолжаем цикл до полного завершения
-                                        }
-                                        else{
-                                                c=3;
-                                                return c;
-                                        }
-                                }
-                        }
-                        s[i].M[s[i].numberofel]=y; //после завершения цикла с проверкой, если не нашло совпадений, запиисываем введённый элемент в множество
-                        s[i].numberofel=s[i].numberofel+1; //увеличиваем кол-во элементов множества на введённое кол-во
+}//verno
+int Add_Element(int x, int y, int nummn){ //функция добавления переменных к уже созданному множеству с существующим первым элементом - представителем
+        int q, c, l;
+        q=Find_Set(x, nummn); //поиск множества с заданным представителем
+        if(q>=0){ //если представитель найден
+                l=Find_Set(y, nummn);
+                if(l<0){ //если этот элемент не равен ни одному элементу множеств
+                        c=1;
+                        s[q].M[s[q].numberofel]=y; //после завершения цикла с проверкой, если не нашло совпадений, запиисываем введённый элемент в множество
+                        s[q].numberofel=s[q].numberofel+1; //увеличиваем кол-во элементов множества на введённое кол-во
+                        return c;
                 }
-                else{
-                        c=2;
-                        continue;
+                else{ //если есть совпадение элементов
+                        c=3;
+                        return c;
                 }
-                break;
         }
-        return c;
+        else{ //если не найден представитель
+                c=2;
+                return c;
+        }
 }
 int Union(int x, int y, int nummn, int numelmax){ //функция объединения двух множеств по заданным элементам этих множеств
         int c, nomer1, nomer2, nomer3;
-        nomer1=Find_Set(x);
-        nomer2=Find_Set(y);
-        if(nomer1<0||nomer2<0||(nomer1+nomer2)>numelmax) c=2; //если элемент(ы) не найден(ы) (или их общее количество превышает максимальное количество элементов), то выводим ошибку;
+        if(nummn<3){
+                c=4;
+                return c;
+        }
+        nomer1=Find_Set(x, nummn);
+        nomer2=Find_Set(y, nummn);
+        if(nomer1<0||nomer2<0){
+                c=2;
+                return c; //если элемент(ы) не найден(ы), то выводим ошибку;
+        }
         else{
                 if(nomer1==nomer2) c=3; //если элементы найдены и равны, то выводим информацию об этом
                 else{ //если элементы различны
@@ -73,19 +72,26 @@ int Union(int x, int y, int nummn, int numelmax){ //функция объединения двух мно
                         }
                         c=1;
                         s[nomer3].numberofel=s[nomer1].numberofel+s[nomer2].numberofel; //в эту структуру записываем итоговое кол-во эл-ов
+                        delete s[nomer3].M;
+                        s[nomer3].M=new int[s[nomer3].numberofel]; //создаём динамический массив элементов, в который и перепишем элементы дву других массивов
                         s[nomer3].predst=s[nomer1].predst; //представителя, равного представителю первого множества
                         for(int i=0;i<s[nomer1].numberofel;i++) s[nomer3].M[i]=s[nomer1].M[i]; //элементы первого множества
                         for(int i=s[nomer1].numberofel, j=0 ; i<s[nomer1].numberofel+s[nomer2].numberofel && j<s[nomer2].numberofel ; i++, j++) s[nomer3].M[i]=s[nomer2].M[j]; //элементы второго множества, начиная после места окончания элементов первого множества
-                        s[nomer2].numberofel=s[nomer1].numberofel=-1; //"удаляем" ненужные множества из коллекции, скрывая их от функций вывода
+                        delete s[nomer1].M;                      //
+                        s[nomer1].M=new int[numelmax];          //
+                        s[nomer1].numberofel=0;                //
+                        delete s[nomer2].M;                   //"очищаем" ненужные множества для дольнейшего использования
+                        s[nomer2].M=new int[numelmax];       //
+                        s[nomer2].numberofel=0;             //
                 }
 
         }
         return c;
 }
-int Find_Set(int x, int numelmax, int nummn){ //функция поиска множества по заданному эл-ту
+int Find_Set(int x, int nummn){ //функция поиска множества по заданному эл-ту
         int c;
         for(int i=0;i<nummn;i++){
-                for(int j=0;j<numelmax;j++){
+                for(int j=0;j<s[i].numberofel;j++){
                         if(x==s[i].M[j]&&s[i].numberofel>0){
                                 c=i;
                                 return c;
@@ -94,7 +100,7 @@ int Find_Set(int x, int numelmax, int nummn){ //функция поиска множества по зада
         }
         c=-1;
         return c;
-}
+}//verno
 int All_Sets(int nummn){
         int c;
         for(int i=0;i<nummn;i++){
@@ -102,7 +108,10 @@ int All_Sets(int nummn){
                         c=1;
                         break;
                 }
-                else c=2;
+                else{
+                        c=2;
+                        return c;
+                }
         }
         for(int i=0;i<nummn;i++){
                 if(s[i].numberofel>0){
@@ -117,7 +126,8 @@ int All_Sets(int nummn){
                         cout<<"}"<<endl;
                 }
         }
-}
+        return c;
+}//verno
 int Certain_Set(int x, int nummn){
         int c;
         for(int i=0;i<nummn;i++){
@@ -137,25 +147,22 @@ int Certain_Set(int x, int nummn){
                 else c=2;
         }
         return c;
-}
-//void ini(void){
-//        for(int i=0;i<b;i++){
-//                s[i].numberofel=0; //инициализация незаполненных множеств
-//        }
-//}
-int Find_Set_Predst(int x, int nummn, int numelmax){ //функция поиска множества по заданному эл-ту
+}//verno
+int Find_Set_Predst(int x, int nummn){ //функция поиска множества по заданному эл-ту
         int c;
         for(int i=0;i<nummn;i++){
-                for(int j=0;j<numelmax;j++){
+                for(int j=0;j<s[i].numberofel;j++){
                         if(x==s[i].M[j]&&s[i].numberofel>0){
                                 c=s[i].predst;
                                 return c;
                         }
                 }
         }
-        return c;
-}
-int Structure(int nummn){
+}//verno
+void Structure(int nummn, int numelmax){
         s=new mn[nummn];
-        return nummn;
-}
+        for(int i=0;i<nummn;i++){
+                s[i].M=new int[numelmax];
+                s[i].numberofel=0; //инициализация незаполненных множеств
+        }
+}//verno

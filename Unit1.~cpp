@@ -8,31 +8,33 @@
 //---------------------------------------------------------------------------
 #include "Unit2.h"
 #pragma argsused
-int x, y, nummn, numelmax=100;
 int main(int argc, char* argv[])
 {
+int x, z, y, nummn, numelmax, kolvonezmn;
+char answer;
 cout<<"vvedite max kolichestvo mnozestv"<<endl;
 cin>>nummn;
-Structure(nummn);
-//ini();
+kolvonezmn=nummn;
+nummn=nummn+1;
+cout<<"vvedite max kolichestvo elementov vo mnozestve"<<endl;
+cin>>numelmax;
+Structure(nummn, numelmax);
 int number;
 while(1){
         cout<<endl<<"1-new set\n2-add elements\n3-union\n4-find set\n5-show sets\n0-exit"<<endl;
         cin>>number;
         switch(number){
                 case 1: //создание нового множества
-                       cout<<endl<<"max kolichestvo mnozestv="<<nummn<<endl;
-                       int z;
-                       char answer;
+                       cout<<endl<<"max kolichestvo mnozestv="<<kolvonezmn<<endl;
                        M:
-                       if(nummn==0){
+                       if(kolvonezmn==0){
                                 cout<<endl<<"limit mnozestv!"<<endl;
                                 break;
                        }
                        else{
                                 cout<<endl<<"vvedite predstavitela"<<endl;
                                 cin>>x;
-                                z=Make_Set(x);
+                                z=Make_Set(x ,nummn, numelmax);
                                 if(z==2){
                                         cout<<endl<<"False input"<<endl<<"Try again?(y/n)"<<endl;
                                         cin>>answer;
@@ -40,7 +42,7 @@ while(1){
                                         if(answer=='n') break;
                                 }
                                 else{
-                                        nummn=nummn-1;
+                                        kolvonezmn=kolvonezmn-1; //количество незадействованных множеств
                                         cout<<endl<<"Successfull!"<<endl<<"Would you like to add elements?(y/n)"<<endl;
                                         cin>>answer;
                                         if(answer=='y') goto L;
@@ -49,15 +51,15 @@ while(1){
                        }
                 break;
                 case 2:
-                       int z;
-                       char answer;
                        L:
-                       cout<<endl<<"vvedite predstavitela mnozestva i vnosimiy element"<<endl;
+                       cout<<endl<<"vvedite lybo'i element mnozestva i vnosimiy v eto mnozestvo element"<<endl;
                        cin>>x>>y;
-                       z=Add_Element(x,y);
+                       z=Add_Element(x, y, nummn);
                        if(z==1){
-                                cout<<endl<<"Successfull!"<<endl;
-                                break;
+                                cout<<endl<<"Successfull! Would you like to add another element?(y/n)"<<endl;
+                                cin>>answer;
+                                if(answer=='y') goto L;
+                                if(answer=='n') break;
                        }
                        if(z==2){
                                 cout<<endl<<"False input. Would you like to try other predstavitel?(y/n)";
@@ -73,42 +75,40 @@ while(1){
                        }
                 break;
                 case 3:
-                       int z;
                        cout<<endl<<"vvedite po odnomy elementy dvyx mnozestv"<<endl;
                        cin>>x>>y;
-                       z=Union(x,y);
+                       z=Union(x, y, nummn, numelmax);
                        if(z==1) cout<<endl<<"Successfull!"<<endl;
                        if(z==2) cout<<endl<<"False input"<<endl;
                        if(z==3) cout<<endl<<"Vvedeny elementy odnogo mnozestva"<<endl;
+                       if(z==4) cout<<endl<<"Nedostatochno mnozestv"<<endl;
                 break;
                 case 4:
                        int z1, z2;
                        cout<<endl<<"vvedite element mnozestva"<<endl;
                        cin>>x;
-                       z1=Find_Set(x);
+                       z1=Find_Set(x, nummn);
                        if(z1<0){
                                 cout<<endl<<"False input!"<<endl;
                                 break;
                        }
                        else{
-                                z2=Find_Set_Predst(x);
+                                z2=Find_Set_Predst(x, nummn);
                                 cout<<endl<<"etot element-element mnozestva s predstvitelem: "<<z2<<endl;
                        }
                 break;
                 case 5:
-                       int z;
-                       char answer;
                        cout<<endl<<"What do you want to see?(1-all sets 2-certain set)"<<endl;
                        cin>>answer;
                        if(answer=='1'){
-                                z=All_Sets();
+                                z=All_Sets(nummn);
                                 if(z==2) cout<<"There are no sets!"<<endl;
                        }
                        if(answer=='2'){
                                 cout<<endl<<"vvedite predstavitela mnozestva"<<endl;
                                 cin>>x;
-                                z=Certain_Set(x);
-
+                                z=Certain_Set(x, nummn);
+                                if(z==2) cout<<"There is no such set!"<<endl;
                        }
                 break;
                 default:
