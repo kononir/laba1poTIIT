@@ -48,7 +48,7 @@ int Add_Element(int x, int y, int nummn){ //функция добавления переменных к уже 
                 return c;
         }
 }
-int Union(int x, int y, int nummn, int numelmax){ //функция объединения двух множеств по заданным элементам этих множеств
+int Union(int x, int y, int nummn, int numelmax, int nummnforunion){ //функция объединения двух множеств по заданным элементам этих множеств
         int c, nomer1, nomer2, nomer3;
         if(nummn<3){
                 c=4;
@@ -63,7 +63,7 @@ int Union(int x, int y, int nummn, int numelmax){ //функция объединения двух мно
         else{
                 if(nomer1==nomer2) c=3; //если элементы найдены и равны, то выводим информацию об этом
                 else{ //если элементы различны
-                        for(int i=0;i<nummn;i++){ //ищем в массиве незаполненную структуру
+                        for(int i=nummnforunion;i<nummn;i++){ //ищем в массиве незаполненную структуру для объединения(начиная с множества, номером введённого кол-ва доступных массивов)
                                 if(s[i].numberofel==0){
                                         nomer3=i;
                                         break;
@@ -132,7 +132,7 @@ int All_Sets(int nummn){
 int Certain_Set(int x, int nummn){
         int c;
         for(int i=0;i<nummn;i++){
-                if(s[i].numberofel>0){
+                if(s[i].numberofel>0 && s[i].predst==x){
                         c=1;
                         cout<<"\npredstavitel="<<s[i].predst<<"\telementy:{";
                         for(int j=0;j<s[i].numberofel;j++){

@@ -10,12 +10,12 @@
 #pragma argsused
 int main(int argc, char* argv[])
 {
-int x, z, y, nummn, numelmax, kolvonezmn;
+int x, z, y, nummn, numelmax, kolvonezmn, nummnforunion;
 char answer;
 cout<<"vvedite max kolichestvo mnozestv"<<endl;
 cin>>nummn;
-kolvonezmn=nummn;
-nummn=nummn+1;
+nummnforunion=kolvonezmn=nummn;
+nummn=nummn+5; //добавляем ещё пять множеств для операции объединения
 cout<<"vvedite max kolichestvo elementov vo mnozestve"<<endl;
 cin>>numelmax;
 Structure(nummn, numelmax);
@@ -77,8 +77,11 @@ while(1){
                 case 3:
                        cout<<endl<<"vvedite po odnomy elementy dvyx mnozestv"<<endl;
                        cin>>x>>y;
-                       z=Union(x, y, nummn, numelmax);
-                       if(z==1) cout<<endl<<"Successfull!"<<endl;
+                       z=Union(x, y, nummn, numelmax, nummnforunion);
+                       if(z==1){
+                                cout<<endl<<"Successfull!"<<endl;
+                                kolvonezmn=kolvonezmn+2;
+                       }
                        if(z==2) cout<<endl<<"False input"<<endl;
                        if(z==3) cout<<endl<<"Vvedeny elementy odnogo mnozestva"<<endl;
                        if(z==4) cout<<endl<<"Nedostatochno mnozestv"<<endl;
